@@ -6,12 +6,12 @@ pipeline {
         }
     }
     stages {
-        stage('Build') {
+        stage('Maven Build') {
             steps {
                 sh 'mvn -B -DskipTests clean package'
             }
         }
-        stage('Test') {
+        stage('Maven Test') {
             steps {
                 sh 'mvn test'
             }
@@ -21,10 +21,20 @@ pipeline {
                 }
             }
         }
-        stage('Deliver') {
+        stage('Docker Build Image') {
             steps {
-                sh './run.sh'
+                sh 'docker build . -t hello-service-node:1'
             }
         }
+        stage('Docker Run Image') {
+            steps {
+                sh 'docker run -d -it --name hello-service-container -p 8888:8888 --env JAEGER_HOST=localhost hello-service-node:1'
+            }
+        }
+//         stage('Deliver Push Image') {
+//             steps {
+//                 sh './run.sh'
+//             }
+//         }
     }
 }
