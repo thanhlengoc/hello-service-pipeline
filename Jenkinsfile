@@ -1,7 +1,7 @@
 pipeline {
     environment {
-        registry = "thanhle21/hello-service"
-        registryCredential = ‘dockerhub’
+        registry = 'thanhle21/hello-service'
+        registryCredential = 'dockerhub'
     }
     agent {
         docker {
