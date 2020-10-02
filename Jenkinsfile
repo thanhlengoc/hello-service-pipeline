@@ -55,12 +55,13 @@ pipeline {
 
 def runSecurityTest() {
     def sonarReportDir = "target/sonar"
-    def jenkinsIP = findJenkinsIp()
-    sh "mvn sonar:sonar -Dsonar.host.url=http://$jenkinsIP:9000"
+    def sonarqubeIP = findSonarqubeIp()
+    sh "mvn sonar:sonar -Dsonar.host.url=http://$jsonarqubeIP:9000"
     sh "ls -al $sonarReportDir"
 }
 
-def findJenkinsIp() {
-    def ip = "localhost"
+def findSonarqubeIp() {
+    def ip = ""
+    ip = sh "docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' sonarqube"
     return ip
 }
