@@ -56,13 +56,14 @@ pipeline {
 def runSecurityTest() {
     def sonarReportDir = "target/sonar"
     def sonarqubeIP = findSonarqubeIp()
-    sh "mvn sonar:sonar -Dsonar.host.url=http://$jsonarqubeIP:9000"
+    echo "sonarqubeIP = [$sonarqubeIP]"
+    sh "mvn sonar:sonar -Dsonar.host.url=http://$sonarqubeIP:9000"
     sh "ls -al $sonarReportDir"
 }
 
 def findSonarqubeIp() {
     def ip = ""
-    ip = sh(returnStdout: true, script: "docker inspect --format '{{ .NetworkSettings.IPAddress }}' sonarqube")
-    echo "ip=$ip"
+    ip = sh(returnStdout: true, script: "docker inspect --format '{{ .NetworkSettings.IPAddress }}' sonarqube").trim()
+    echo "ip = [$ip]"
     return ip
 }
