@@ -37,7 +37,7 @@ pipeline {
         }
         stage('Deliver Push Image To Hub') {
             steps {
-                sh './deliver.sh'
+                sh 'sh ./deliver.sh'
             }
         }
     }
