@@ -63,5 +63,6 @@ def runSecurityTest() {
 def findSonarqubeIp() {
     def ip = ""
     ip = sh "docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' sonarqube"
+    echo "ip=$ip"
     return ip
 }
