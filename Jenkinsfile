@@ -1,7 +1,8 @@
 pipeline {
     environment {
-        registry = 'thanhle21/hello-service'
+        registry = "thanhle21/hello-service"
         registryCredential = 'dockerhub'
+        dockerImage = ''
     }
     agent {
         docker {
@@ -27,17 +28,24 @@ pipeline {
         }
         stage('Docker Build Image') {
             steps {
-                sh 'docker build . -t hello-service-node:1'
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+//                 sh 'docker build . -t hello-service-node:1'
             }
         }
-        stage('Docker Run Image') {
-            steps {
-                sh 'docker run -d -it --name hello-service-container -p 8888:8888 --env JAEGER_HOST=localhost hello-service-node:1'
-            }
-        }
+//         stage('Docker Run Image') {
+//             steps {
+//                 sh 'docker run -d -it --name hello-service-container -p 8888:8888 --env JAEGER_HOST=localhost hello-service-node:1'
+//             }
+//         }
         stage('Deliver Push Image To Hub') {
             steps {
-                sh 'sh ./deliver.sh'
+                script {
+                    docker.withRegistry( '', registryCredential ) {
+                        dockerImage.push()
+                    }
+                }
             }
         }
     }
