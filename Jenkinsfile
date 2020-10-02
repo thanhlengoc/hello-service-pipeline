@@ -63,6 +63,6 @@ def runSecurityTest() {
 }
 
 def findJenkinsIp() {
-    def ip = "127.0.0.1"
+    def ip = "localhost"
     return ip
 }
