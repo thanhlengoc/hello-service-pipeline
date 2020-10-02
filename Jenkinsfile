@@ -56,12 +56,10 @@ pipeline {
 def runSecurityTest() {
     def sonarReportDir = "target/sonar"
     def jenkinsIP = findJenkinsIp()
-    dir("hello-service") {
-        withDockerContainer("maven:3-alpine")  {
-            sh "mvn sonar:sonar -Dsonar.host.url=http://$jenkinsIP:9000"
-        }
-        sh "ls -al $sonarReportDir"
-     }
+    withDockerContainer("maven:3-alpine")  {
+        sh "mvn sonar:sonar -Dsonar.host.url=http://$jenkinsIP:9000"
+    }
+    sh "ls -al $sonarReportDir"
 }
 
 def findJenkinsIp() {
