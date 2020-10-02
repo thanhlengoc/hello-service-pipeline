@@ -26,12 +26,14 @@ pipeline {
                 }
             }
         }
+        stage('Run Security Scan') {
+            steps { runSecurityTest() }
+        }
         stage('Docker Build Image') {
             steps {
                 script {
                     dockerImage = docker.build registry + ":$BUILD_NUMBER"
                 }
-//                 sh 'docker build . -t hello-service-node:1'
             }
         }
 //         stage('Docker Run Image') {
@@ -49,4 +51,20 @@ pipeline {
             }
         }
     }
+}
+
+def runSecurityTest() {
+    def sonarReportDir = "target/sonar"
+    def jenkinsIP = findJenkinsIp()
+    dir("hello-service") {
+        withDockerContainer("maven:3-alpine")  {
+            sh "mvn sonar:sonar -Dsonar.host.url=http://$jenkinsIP:9000"
+        }
+        sh "ls -al $sonarReportDir"
+     }
+}
+
+def findJenkinsIp() {
+    def ip = "127.0.0.1"
+    return ip
 }
