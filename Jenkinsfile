@@ -69,6 +69,7 @@ pipeline {
 def initialize() {
     env.MAX_ENVIRONMENT_NAME_LENGTH = 32
     setEnvironment()
+    showEnvironmentVariables()
 }
 
 def runSecurityTest() {
