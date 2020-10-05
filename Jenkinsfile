@@ -105,7 +105,8 @@ def setEnvironment() {
     def environment = 'dev'
     echo "branchName = $branchName"
     if (branchName == "") {
-        showEnvironmentVariables() throw "BRANCH_NAME is not an environment variable or is empty"
+        showEnvironmentVariables()
+        throw "BRANCH_NAME is not an environment variable or is empty"
     }
     else if (branchName != "master") {
         if (branchName.contains("/")) {
