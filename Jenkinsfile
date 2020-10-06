@@ -4,7 +4,7 @@ pipeline {
         registryDockerCredential = 'dockerhub'
         registryHeroku = "registry.heroku.com"
         herokuUsername = "thanhlengoc21@gmail.com"
-        registryHerokuCredential = 'Heroku'
+        registryHerokuCredential = 'heroku-credential-id'
         herokuApp = "thanhlnapp"
         herokuProcessType = "web"
         dockerImage = ''
@@ -134,20 +134,27 @@ def deployImage(environment) {
     def dockerImageNameTag = registryDocker + ":$BUILD_NUMBER"
     def dockerContainer = env.SERVICE_NAME + "-container"
     def port = 5000
-    echo "Deploy $dockerImageNameTag to env environment $environment with name $dockerContainer"
     if (environment == 'dev') {
+        echo "Deploy $dockerImageNameTag to env environment $environment with name $dockerContainer"
         sh "docker run -d -it --name $dockerContainer -p $port:$port -e PORT=$port -e JAEGER_HOST=$ip $dockerImageNameTag"
     }
     if (environment == 'prod') {
-        //deploy to heroku
-        // heroku create thanhlnapp
-        withEnv(['PATH_HEROKU=/use/local/bin/']) {
-            sh 'docker login --username=thanhlengoc21@gmail.com --password=$(heroku auth:token) registry.heroku.com'
+        //-----------deploy to heroku---------------
+        // heroku login
+        docker.withRegistry( '', registryHerokuCredential ) {
+            sh 'docker login -u thanhlengoc21@gmail.com -p $(heroku auth:token) registry.heroku.com'
         }
+
+        // heroku create $herokuApp
         def registryHerokuImage = "$registryHeroku/$herokuApp/$herokuProcessType"
+        echo "Deploy $registryHerokuImage to env environment $environment"
+
+        //tag and push to registry
         sh "docker tag $dockerImageNameTag $registryHerokuImage"
         sh "docker push $registryHerokuImage"
-        sh "/use/local/bin/heroku container:release -a $herokuApp $herokuProcessType"
+
+        //release container
+        sh "/usr/local/bin/heroku container:release -a $herokuApp $herokuProcessType"
     }
 }
 
