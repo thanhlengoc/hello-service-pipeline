@@ -142,7 +142,7 @@ def deployImage(environment) {
         //deploy to heroku
         // heroku create thanhlnapp
         def registryHerokuImage = "$registryHeroku/$herokuApp/$herokuProcessType"
-        sh "docker login --username=$herokuUsername --password=$(heroku auth:token) $registryHeroku"
+        sh 'docker login --username=thanhlengoc21@gmail.com --password=$(heroku auth:token) registry.heroku.com'
         sh "docker tag $dockerImageNameTag $registryHerokuImage"
         sh "docker push $registryHerokuImage"
         sh "heroku container:release -a $herokuApp $herokuProcessType"
