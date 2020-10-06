@@ -142,11 +142,11 @@ def findIp(environment) {
     def ip = ""
     if (env.BRANCH_NAME == "dev-test") {
         ip = sh(returnStdout: true, script: "docker-machine ip default")
-        sh "eval $(docker-machine env default)"
+        sh 'eval $(docker-machine env default)'
     }
     else if (env.BRANCH_NAME == "release-test") {
         ip = sh(returnStdout: true, script: "docker-machine ip prod")
-        sh "eval $(docker-machine env prod)"
+        sh 'eval $(docker-machine env prod)'
     }
     else {
         ip = "localhost"
