@@ -1,0 +1,1 @@
+web: java -Djava.security.egd=file:/dev/./urandom -jar /hello-service.jar $JAVA_OPTS

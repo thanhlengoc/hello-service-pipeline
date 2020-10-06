@@ -1,7 +1,12 @@
 pipeline {
     environment {
-        registry = "thanhle21/hello-service"
-        registryCredential = 'dockerhub'
+        registryDocker = "thanhle21/hello-service"
+        registryDockerCredential = 'dockerhub'
+        registryHeroku = "registry.heroku.com"
+        herokuUsername = "thanhlengoc21@gmail.com"
+        registryHerokuCredential = 'Heroku'
+        herokuApp = "thanhlnapp"
+        herokuProcessType = "web"
         dockerImage = ''
     }
     agent {
@@ -35,38 +40,39 @@ pipeline {
         stage('Docker Build Image') {
             steps {
                 script {
-                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                    dockerImage = docker.build registryDocker + ":$BUILD_NUMBER"
                 }
             }
         }
         stage('Deploy to Local') {
-            steps { deployImage('local') }
+            when { branch 'dev' }
+            steps { deployImage('dev') }
         }
 //         stage('Deploy to Dev') {
 //             when { branch 'dev' }
 //             steps { deployImage('dev') }
 //         }
         stage('Process to Production') {
-            when { branch 'release' }
+            when { branch 'dev' }
             steps { proceedTo('prod') }
         }
         stage('Deploy to Production') {
-            when { branch 'release' }
+            when { branch 'dev' }
             steps {
-                // deployImage(prod)
+                deployImage('prod')
                 echo "Deploy Production Success"
             }
         }
-        stage('Deliver Image To Hub') {
-            when { branch 'release'}
-            steps {
-                script {
-                    docker.withRegistry( '', registryCredential ) {
-                        dockerImage.push()
-                    }
-                }
-            }
-        }
+//         stage('Deliver Image To Hub') {
+//             when { branch 'release'}
+//             steps {
+//                 script {
+//                     docker.withRegistry( '', registryDockerCredential ) {
+//                         dockerImage.push()
+//                     }
+//                 }
+//             }
+//         }
     }
 }
 
@@ -125,11 +131,22 @@ def findSonarqubeIp() {
 
 def deployImage(environment) {
     def ip = findIp(environment)
-    def dockerImageNameTag = registry + ":$BUILD_NUMBER"
+    def dockerImageNameTag = registryDocker + ":$BUILD_NUMBER"
     def dockerContainer = env.SERVICE_NAME + "-container"
     def port = 5000
     echo "Deploy $dockerImageNameTag to env environment $environment with name $dockerContainer"
-    sh "docker run -d -it --name $dockerContainer -p $port:$port -e PORT=$port -e JAEGER_HOST=$ip $dockerImageNameTag"
+    if (environment == 'dev') {
+        sh "docker run -d -it --name $dockerContainer -p $port:$port -e PORT=$port -e JAEGER_HOST=$ip $dockerImageNameTag"
+    }
+    if (environment == 'prod') {
+        //deploy to heroku
+        // heroku create thanhlnapp
+        def registryHerokuImage = "$registryHeroku/$herokuApp/$herokuProcessType"
+        sh "docker login --username=$herokuUsername --password=$(heroku auth:token) $registryHeroku"
+        sh "docker tag $dockerImageNameTag $registryHerokuImage"
+        sh "docker push $registryHerokuImage"
+        sh "heroku container:release -a $herokuApp $herokuProcessType"
+    }
 }
 
 def findIp(environment) {
