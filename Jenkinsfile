@@ -126,8 +126,8 @@ def deployImage(environment) {
     def ip = findIp(environment)
     def dockerImageNameTag = registry + ":$BUILD_NUMBER"
     def dockerContainer = registry + "-container"
-    def port = '5000'
-    echo "Deploy " dockerImage "to env environment $environment" " with name " dockerContainer
+    def port = 5000
+    echo "Deploy $dockerImageNameTag to env environment $environment with name $dockerContainer"
     sh "docker run -d -it --name $dockerContainer -p $port:$port -e PORT=$port -e JAEGER_HOST=$ip $dockerImageNameTag"
 }
 
