@@ -13,9 +13,9 @@ FROM openjdk:8-jre-alpine
 
 COPY --from=build /hello-service/target/hello-service.jar /
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom", "-jar", "/hello-service.jar"]
-EXPOSE 8888
 
+#EXPOSE 8888
 # set a health check
-HEALTHCHECK --interval=5s \
-            --timeout=5s \
-            CMD curl -f http://127.0.0.1:8888 || exit 1
+#HEALTHCHECK --interval=5s \
+#            --timeout=5s \
+#            CMD curl -f http://127.0.0.1:8888 || exit 1
