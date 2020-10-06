@@ -141,8 +141,8 @@ def deployImage(environment) {
     if (environment == 'prod') {
         //-----------deploy to heroku---------------
         // heroku login
-        withEnv(['HEROKU_PATH=/usr/local/bin/']) {
-            sh 'docker login -u thanhlengoc21@gmail.com -p $(heroku auth:token) registry.heroku.com'
+        withCredentials([[$class: 'StringBinding', credentialsId: 'HEROKU_API_KEY', variable: 'HEROKU_API_KEY']])  {
+            sh 'docker login --username=thanhlengoc21@gmail.com --password=$(heroku auth:token) registry.heroku.com'
         }
 
         // heroku create $herokuApp
