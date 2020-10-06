@@ -3,8 +3,6 @@ pipeline {
         registry = "thanhle21/hello-service"
         registryCredential = 'dockerhub'
         dockerImage = ''
-        dockerContainer = ''
-        port = ''
     }
     agent {
         docker {
@@ -42,13 +40,7 @@ pipeline {
             }
         }
         stage('Deploy to Local') {
-            steps {
-                script {
-                    dockerContainer = dockerImage + "-container"
-                    port = '5000'
-                }
-                deployImage('local')
-            }
+            steps { deployImage('local') }
         }
 //         stage('Deploy to Dev') {
 //             when { branch 'dev' }
@@ -130,14 +122,17 @@ def findSonarqubeIp() {
     return ip
 }
 
+def buildAndRegistryImage() {
+
+}
+
 def deployImage(environment) {
+    echo "dockerImage = [$dockerImage]"
     def ip = findIp(environment)
+    def dockerContainer = dockerImage + '-container'
+    def port = '5000'
     echo "Deploy " dockerImage "to env environment $environment" " with name " dockerContainer
-    sh 'docker run -d -it --name ' dockerContainer
-        ' -p ' port":"port
-        ' -e PORT=' port ' '
-        ' -e JAEGER_HOST=' ip ' '
-        dockerImage
+    sh "docker run -d -it --name $dockerContainer -p $port:$port -e PORT=$port -e JAEGER_HOST=$ip $dockerImage"
 }
 
 def findIp(environment) {
