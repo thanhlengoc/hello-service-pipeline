@@ -141,7 +141,7 @@ def deployImage(environment) {
     if (environment == 'prod') {
         //-----------deploy to heroku---------------
         // heroku login
-        docker.withRegistry( '', registryHerokuCredential ) {
+        withEnv(['HEROKU_PATH=/usr/local/bin/']) {
             sh 'docker login -u thanhlengoc21@gmail.com -p $(heroku auth:token) registry.heroku.com'
         }
 
