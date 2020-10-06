@@ -43,8 +43,10 @@ pipeline {
         }
         stage('Deploy to Local') {
             steps {
-                dockerContainer = dockerImage + "-container"
-                port = '5000'
+                script {
+                    dockerContainer = dockerImage + "-container"
+                    port = '5000'
+                }
                 deployImage('local')
             }
         }
