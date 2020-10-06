@@ -14,6 +14,7 @@ FROM openjdk:8-jre-alpine
 COPY --from=build /hello-service/target/hello-service.jar /
 #ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/hello-service.jar"]
 CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/hello-service.jar"]
+#CMD ["web", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /hello-service.jar"]
 
 #EXPOSE 8888
 # set a health check

@@ -44,10 +44,10 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to Local') {
-            when { branch 'dev' }
-            steps { deployImage('dev') }
-        }
+//         stage('Deploy to Local') {
+//             when { branch 'dev' }
+//             steps { deployImage('dev') }
+//         }
 //         stage('Deploy to Dev') {
 //             when { branch 'dev' }
 //             steps { deployImage('dev') }
@@ -141,11 +141,13 @@ def deployImage(environment) {
     if (environment == 'prod') {
         //deploy to heroku
         // heroku create thanhlnapp
+        withEnv(['PATH_HEROKU=/use/local/bin/']) {
+            sh 'docker login --username=thanhlengoc21@gmail.com --password=$(heroku auth:token) registry.heroku.com'
+        }
         def registryHerokuImage = "$registryHeroku/$herokuApp/$herokuProcessType"
-        sh 'docker login --username=thanhlengoc21@gmail.com --password=$(heroku auth:token) registry.heroku.com'
         sh "docker tag $dockerImageNameTag $registryHerokuImage"
         sh "docker push $registryHerokuImage"
-        sh "heroku container:release -a $herokuApp $herokuProcessType"
+        sh "/use/local/bin/heroku container:release -a $herokuApp $herokuProcessType"
     }
 }
 
