@@ -122,17 +122,13 @@ def findSonarqubeIp() {
     return ip
 }
 
-def buildAndRegistryImage() {
-
-}
-
 def deployImage(environment) {
-    echo "dockerImageNameTag = " + registry + ":$BUILD_NUMBER"
     def ip = findIp(environment)
-    def dockerContainer = dockerImage + '-container'
+    def dockerImageNameTag = registry + ":$BUILD_NUMBER"
+    def dockerContainer = registry + "-container"
     def port = '5000'
     echo "Deploy " dockerImage "to env environment $environment" " with name " dockerContainer
-    sh "docker run -d -it --name $dockerContainer -p $port:$port -e PORT=$port -e JAEGER_HOST=$ip $dockerImage"
+    sh "docker run -d -it --name $dockerContainer -p $port:$port -e PORT=$port -e JAEGER_HOST=$ip $dockerImageNameTag"
 }
 
 def findIp(environment) {
