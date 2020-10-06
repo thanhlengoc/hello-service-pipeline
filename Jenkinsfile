@@ -76,6 +76,7 @@ pipeline {
 
 def initialize() {
     env.MAX_ENVIRONMENT_NAME_LENGTH = 32
+    env.SERVICE_NAME = "hello-service"
     setEnvironment()
     showEnvironmentVariables()
 }
@@ -125,7 +126,7 @@ def findSonarqubeIp() {
 def deployImage(environment) {
     def ip = findIp(environment)
     def dockerImageNameTag = registry + ":$BUILD_NUMBER"
-    def dockerContainer = registry + "-container"
+    def dockerContainer = env.SERVICE_NAME + "-container"
     def port = 5000
     echo "Deploy $dockerImageNameTag to env environment $environment with name $dockerContainer"
     sh "docker run -d -it --name $dockerContainer -p $port:$port -e PORT=$port -e JAEGER_HOST=$ip $dockerImageNameTag"
