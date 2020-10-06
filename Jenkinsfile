@@ -76,7 +76,6 @@ pipeline {
 
 def initialize() {
     env.MAX_ENVIRONMENT_NAME_LENGTH = 32
-    env.IMAGE_NAME = "hello-service"
     setEnvironment()
     showEnvironmentVariables()
 }
@@ -128,7 +127,7 @@ def buildAndRegistryImage() {
 }
 
 def deployImage(environment) {
-    echo "dockerImage =" + dockerImage
+    echo "dockerImageNameTag = " + registry + ":$BUILD_NUMBER"
     def ip = findIp(environment)
     def dockerContainer = dockerImage + '-container'
     def port = '5000'
